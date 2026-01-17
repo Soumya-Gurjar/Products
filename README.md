@@ -1,59 +1,127 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Admin Products & Cart API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This project is a Laravel-based application that includes an Admin Panel for product management and REST APIs for customer cart and checkout functionality using Laravel Sanctum.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tech Stack
+- Laravel 10/11
+- PHP 8.2
+- MySQL
+- Laravel Sanctum (API Authentication)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Setup Instructions
 
-## Learning Laravel
+1. Clone the Repository
+```bash
+git clone https://github.com/Soumya-Gurjar/Products.git
+cd backend
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+2. Install Dependencies
+composer install
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. Environment Setup
+cp .env.example .env
+php artisan key:generate
+Update database credentials in the .env file.
 
-## Laravel Sponsors
+4. Run Migrations & Seeders
+php artisan migrate:fresh --seed
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+5. Start the Application
+php artisan serve
+Application will be available at:http://127.0.0.1:8000
 
-### Premium Partners
+Admin Login (Seeded)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Email: admin@example.com
 
-## Contributing
+Password: password
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Admin Login URL:
 
-## Code of Conduct
+http://127.0.0.1:8000/admin/login
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+API Authentication (Sanctum)
 
-## Security Vulnerabilities
+Users must register or login to obtain an API token.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+All protected APIs require Bearer Token authentication.
 
-## License
+API Endpoints
+Auth APIs
+Method	Endpoint
+POST	/api/register
+POST	/api/login
+POST	/api/logout
+Cart APIs (Authenticated)
+Method	Endpoint
+POST	/api/cart/items
+GET	/api/cart
+PATCH	/api/cart/items/{product_id}
+DELETE	/api/cart/items/{product_id}
+POST	/api/cart/checkout
+API Testing (Curl Examples)
+Register
+curl -X POST http://127.0.0.1:8000/api/register \
+-H "Content-Type: application/json" \
+-d '{"name":"Test User","email":"test@example.com","password":"password"}'
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Login
+curl -X POST http://127.0.0.1:8000/api/login \
+-H "Content-Type: application/json" \
+-d '{"email":"test@example.com","password":"password"}'
+
+Add to Cart
+curl -X POST http://127.0.0.1:8000/api/cart/items \
+-H "Authorization: Bearer TOKEN" \
+-H "Content-Type: application/json" \
+-d '{"product_id":1,"qty":2}'
+
+View Cart
+curl -X GET http://127.0.0.1:8000/api/cart \
+-H "Authorization: Bearer TOKEN"
+
+Update Cart Item
+curl -X PATCH http://127.0.0.1:8000/api/cart/items/1 \
+-H "Authorization: Bearer TOKEN" \
+-H "Content-Type: application/json" \
+-d '{"qty":5}'
+
+Delete Cart Item
+curl -X DELETE http://127.0.0.1:8000/api/cart/items/1 \
+-H "Authorization: Bearer TOKEN"
+
+Checkout
+curl -X POST http://127.0.0.1:8000/api/cart/checkout \
+-H "Authorization: Bearer TOKEN"
+
+Logout
+curl -X POST http://127.0.0.1:8000/api/logout \
+-H "Authorization: Bearer TOKEN"
+
+Testing
+
+Feature tests are implemented for critical flows:
+
+Add to cart merges duplicate items correctly
+
+Checkout fails when stock is insufficient and does not deduct stock or clear cart
+
+Run tests using:
+
+php artisan test
+
+Key Features
+
+Admin authentication and product management (CRUD)
+
+Secure customer APIs using Sanctum
+
+Cart module with quantity merge logic
+
+Checkout with database transaction and stock validation
+
+Feature tests for cart and checkout flows
